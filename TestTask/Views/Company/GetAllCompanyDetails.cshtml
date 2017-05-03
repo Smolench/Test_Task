@@ -1,12 +1,10 @@
-﻿@model IEnumerable<TestTask.Models.Company>
+﻿@model IEnumerable<TestTask.Models.CompanyModel>
+@{
+    ViewBag.Title = "Companies";
+}
 
-
-   @Html.Action("Index", "Main")
-
-<br />
-<p>
-    @Html.ActionLink("Create new company", "AddCompany")
-</p>
+<h3>Companies | @Html.ActionLink("Add new company", "AddCompany", "Company", new { @type = "button", @class = "btn btn-success" })</h3> 
+<br/>
 
 <table class="table">
     <tr>

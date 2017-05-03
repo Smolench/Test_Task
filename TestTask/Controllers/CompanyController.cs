@@ -1,21 +1,54 @@
-﻿using System.Web.Mvc;
+﻿using System.Collections.Generic;
+using System.Configuration;
+using System.Web.Mvc;
+using DataAccess;
+using DataModels;
 using TestTask.Models;
-using TestTask.Repository;
+
 
 namespace TestTask.Controllers
 {
     public class CompanyController : Controller
     {
+        private CompanyDataAccess companyAccess;
+
+        public CompanyController()
+        {
+            string connectionString = ConfigurationManager.ConnectionStrings["GetConnection"].ConnectionString;
+            companyAccess = new CompanyDataAccess(connectionString);
+        }
            
         public ActionResult GetAllCompanyDetails()
         {
+            try
+            {
+                List<CompanyModel> companyModels = new List<CompanyModel>();
 
-            CompanyRepository compRepository = new CompanyRepository();
-            ModelState.Clear();
-            return View(compRepository.GetAllCompanies());
+                foreach (var company in companyAccess.GetAllCompanies())
+                {
+                    companyModels.Add(CopyDataToViewModel(company));
+                }
+
+                return View(companyModels);
+            }
+            catch
+            {
+                return RedirectToAction("Error", "Main");
+            }
         }
 
-       
+        private CompanyModel CopyDataToViewModel(Company company)
+        {
+            return new CompanyModel()
+            {
+                CompanyId = company.CompanyId,
+                Name = company.Name,
+                Size = company.Size,
+                Form = company.Form,
+            };
+        }
+
+        [HttpGet]
         public ActionResult AddCompany()
         {
             return View();
@@ -23,59 +56,72 @@ namespace TestTask.Controllers
 
            
         [HttpPost]
-        public ActionResult AddCompany(Company comp)
+        public ActionResult AddCompany(CompanyModel comp)
+        {
+            if(ModelState.IsValid)
+            {
+                try
+                {
+                    companyAccess.AddCompany(CopyDataToCompany(comp));
+
+                    return RedirectToAction("GetAllCompanyDetails");
+                }
+                catch
+                {
+                    return RedirectToAction("Error", "Main");
+                }
+            }
+
+            return View();
+        }
+
+        private Company CopyDataToCompany(CompanyModel comp)
+        {
+            return new Company()
+            {
+                CompanyId = comp.CompanyId,
+                Name = comp.Name,
+                Size = comp.Size,
+                Form = comp.Form,
+            };
+        }
+
+        [HttpGet]
+        public ActionResult EditCompanyDetails(int id)
         {
             try
             {
-                if (ModelState.IsValid)
-                {
-                    CompanyRepository compRepository = new CompanyRepository();
+                CompanyModel companyModel = CopyDataToViewModel(companyAccess.GetCompany(id));
 
-                    if (compRepository.AddCompany(comp))
-                    {
-                        ViewBag.Message = "Company details added successfully";
-                    }
-                }
-
-                return RedirectToAction("GetAllCompanyDetails");
+                return View(companyModel);
             }
             catch
             {
-                return View();
+                return RedirectToAction("Error", "Main");
             }
-        }
-
-       
-        public ActionResult EditCompanyDetails(int id)
-        {
-            CompanyRepository compRepository = new CompanyRepository();
-
-
-
-            return View(compRepository.GetAllCompanies().Find(comp => comp.CompanyId == id));
 
         }
 
             
         [HttpPost]
-
-        public ActionResult EditCompanyDetails(int id, Company obj)
+        public ActionResult EditCompanyDetails(CompanyModel companyModel)
         {
-            try
+            if (ModelState.IsValid)
             {
-                CompanyRepository compRepository = new CompanyRepository();
+                try
+                {
+                    Company company = CopyDataToCompany(companyModel);
+                    companyAccess.EditCompany(company.CompanyId, company);
 
-                compRepository.UpdateCompany(obj);
-
-
-
-
-                return RedirectToAction("GetAllCompanyDetails");
+                    return RedirectToAction("GetAllCompanyDetails");
+                }
+                catch
+                {
+                    return RedirectToAction("Error", "Main");
+                }
             }
-            catch
-            {
-                return View();
-            }
+
+            return View(companyModel);
         }
 
        
@@ -83,29 +129,14 @@ namespace TestTask.Controllers
         {
             try
             {
-                CompanyRepository compRepository = new CompanyRepository();
-                if (compRepository.DeleteCompany(id))
-                {
-                    ViewBag.AlertMsg = "company details deleted successfully";
-
-                }
+                companyAccess.DeleteCompany(id);
                 return RedirectToAction("GetAllCompanyDetails");
-
             }
             catch
             {
-                return RedirectToAction("GetAllCompanyDetails");
+                return RedirectToAction("Error", "Main");
             }
         }
-
-        public ActionResult GetAllCompanies()
-        {
-            return RedirectToAction("GetAllCompanyDetails");
-        }
-
-        public ActionResult Home()
-        {
-            return View("~/Views/Main/Index.cshtml");
-        }
+        
     }
 }

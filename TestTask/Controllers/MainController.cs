@@ -14,14 +14,8 @@ namespace TestTask.Controllers
             return View();
         }
 
-        public ActionResult ShowWorkers()
+        public ActionResult Error()
         {
-            return View();
-        }
-
-        public ActionResult ShowCompanies()
-        {
-
             return View();
         }
 

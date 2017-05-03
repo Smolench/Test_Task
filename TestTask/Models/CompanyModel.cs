@@ -6,18 +6,20 @@ using System.Web;
 
 namespace TestTask.Models
 {
-    public class Company
+    public class CompanyModel
     {
-        [Display(Name = "Id")]
         public int CompanyId { get; set; }
 
-        [Required(ErrorMessage = "Name is required.")]
+        [Required]
+        [Display(Name = "Name")]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "Size is required.")]
+        [Required]
+        [Display(Name = "Size")]
         public int Size { get; set; }
 
-        [Required(ErrorMessage = "Form is required.")]
+        [Required]
+        [Display(Name = "Form")]
         public string Form { get; set; }
     }
 }

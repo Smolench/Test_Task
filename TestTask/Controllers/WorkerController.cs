@@ -1,81 +1,159 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using DataAccess;
+using DataModels;
 using TestTask.Models;
-using TestTask.Repository;
+
 
 namespace TestTask.Controllers
 {
     public class WorkerController : Controller
     {
-           
-        public ActionResult GetAllWorkerDetails()
-        {
+        private CompanyDataAccess companyAccess;
+        private WorkerDataAccess workerAccess;
 
-            WorkerRepository WorkRepository = new WorkerRepository();
-            ModelState.Clear();
-            return View(WorkRepository.GetAllWorkers());
+        public WorkerController()
+        {
+            string connectionString = ConfigurationManager.ConnectionStrings["GetConnection"].ConnectionString;
+            workerAccess = new WorkerDataAccess(connectionString);
+            companyAccess = new CompanyDataAccess(connectionString);
         }
 
-         
+        public ActionResult GetAllWorkerDetails()
+        {
+            try
+            {
+                List<WorkerModel> workerModels = new List<WorkerModel>();
+
+                foreach (var worker in workerAccess.GetAllWorkers())
+                {
+                    WorkerModel workerModel = CopyDataToModel(worker);
+                    workerModel.Company = CopyDataToModel(companyAccess.GetCompany(workerModel.WorkerId));
+                    workerModels.Add(workerModel);
+                }
+                return View(workerModels);
+            }
+            catch
+            {
+                return RedirectToAction("Error", "Main");
+            }
+        }
+
+        private WorkerModel CopyDataToModel(Worker worker)
+        {
+            return new WorkerModel()
+            {
+                WorkerId = worker.WorkerId,
+                LastName = worker.LastName,
+                FirstName = worker.FirstName,
+                MiddleName = worker.MiddleName,
+                EntryDate = worker.EntryDate,
+                Position = worker.Position,
+                CompanyId = worker.CompanyId,
+            };
+        }
+
+        private CompanyModel CopyDataToModel(Company company)
+        {
+            return new CompanyModel()
+            {
+                CompanyId = company.CompanyId,
+                Name = company.Name,
+                Size = company.Size,
+                Form = company.Form,
+            };
+        }
+
+        [HttpGet]
         public ActionResult AddWorker()
         {
-            return View();
+            try
+            {
+                ViewBag.Companies = companyAccess.GetAllCompanies();
+                return View();
+            }
+            catch
+            {
+                return RedirectToAction("Error", "Main");
+            }
         }
 
            
         [HttpPost]
-        public ActionResult AddWorker(Worker worker)
+        public ActionResult AddWorker(WorkerModel worker)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    WorkerRepository WorkRepository = new WorkerRepository();
+                    workerAccess.AddWorker(CopyDataToWorker(worker));
 
-                    if (WorkRepository.AddWorker(worker))
-                    {
-                        ViewBag.Message = "Worker details added successfully";
-                    }
+                    return RedirectToAction("GetAllWorkerDetails");
                 }
 
-                return RedirectToAction("GetAllWorkerDetails");
+                ViewBag.Companies = companyAccess.GetAllCompanies();
+                return View();
             }
             catch
             {
-                return View();
+                return RedirectToAction("Error", "Main");
             }
         }
 
-        
+        private Worker CopyDataToWorker(WorkerModel worker)
+        {
+            return new Worker()
+            {
+                WorkerId = worker.WorkerId,
+                LastName = worker.LastName,
+                FirstName = worker.FirstName,
+                MiddleName = worker.MiddleName,
+                EntryDate = worker.EntryDate,
+                Position = worker.Position,
+                CompanyId = worker.CompanyId,
+            };
+        }
+
+        [HttpGet]
         public ActionResult EditWorkerDetails(int id)
         {
-            WorkerRepository WorkRepository = new WorkerRepository();
-
-
-            return View(WorkRepository.GetAllWorkers().Find(worker => worker.WorkerId == id));
-
+            try
+            {
+                WorkerModel workerwModel = CopyDataToModel(workerAccess.GetWorker(id));
+                ViewBag.Companies = companyAccess.GetAllCompanies();
+                return View(workerwModel);
+            }
+            catch
+            {
+                return RedirectToAction("Error", "Main");
+            }
         }
 
 
 
         [HttpPost]
-        public ActionResult EditWorkerDetails(int id, Worker obj)
+        public ActionResult EditWorkerDetails(WorkerModel workerModel)
         {
             try
             {
-                WorkerRepository WorkRepository = new WorkerRepository();
+                if (ModelState.IsValid)
+                {
+                    Worker worker = CopyDataToWorker(workerModel);
+                    workerAccess.EditWorker(worker.WorkerId, worker);
 
+                    return RedirectToAction("GetAllWorkerDetails");
+                }
 
-                WorkRepository.UpdateWorker(obj);
-
-                return RedirectToAction("GetAllWorkerDetails");
+                ViewBag.Companies = companyAccess.GetAllCompanies();
+                return View(workerModel);
             }
             catch
             {
-                return RedirectToAction("GetAllWorkerDetails");
+                return RedirectToAction("Error", "Main");
             }
         }
 
@@ -84,29 +162,15 @@ namespace TestTask.Controllers
         {
             try
             {
-                WorkerRepository WorkRepository = new WorkerRepository();
-                if (WorkRepository.DeleteWorker(id))
-                {
-                    ViewBag.AlertMsg = "Worker details deleted successfully";
-
-                }
+                workerAccess.DeleteWorker(id);
                 return RedirectToAction("GetAllWorkerDetails");
 
             }
             catch
             {
-                return RedirectToAction("GetAllWorkerDetails");
+                return RedirectToAction("Error", "Main");
             }
         }
-
-        public ActionResult GetAllWorkers()
-        {
-            return RedirectToAction("GetAllWorkerDetails");
-        }
-
-        public ActionResult Home()
-        {
-            return View("~/Views/Main/Index.cshtml");
-        }
+        
     }
 }

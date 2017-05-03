@@ -97,7 +97,9 @@
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
-    <None Include="ReadMe" />
+    <None Include="ReadMe">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -112,6 +114,7 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\CompanyController.cs" />
     <Compile Include="Controllers\MainController.cs" />
@@ -119,27 +122,24 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\Company.cs" />
-    <Compile Include="Models\Worker.cs" />
+    <Compile Include="Models\CompanyModel.cs" />
+    <Compile Include="Models\WorkerModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repository\CompanyRepository.cs" />
-    <Compile Include="Repository\WorkerRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />
     <Content Include="packages.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Worker\AddWorker.cshtml" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
-    <Content Include="Views\Worker\GetAllWorkerDetails.cshtml" />
     <Content Include="Views\Company\GetAllCompanyDetails.cshtml" />
     <Content Include="Views\Company\AddCompany.cshtml" />
     <Content Include="Views\Company\EditCompanyDetails.cshtml" />
-    <Content Include="Views\Worker\EditWorkerDetails.cshtml" />
     <Content Include="Views\Main\Index.cshtml" />
-    <Content Include="Views\Main\ShowWorkers.cshtml" />
-    <Content Include="Views\Main\ShowCompanies.cshtml" />
+    <Content Include="Views\Main\Error.cshtml" />
+    <Content Include="Views\Worker\GetAllWorkerDetails.cshtml" />
+    <Content Include="Views\Worker\AddWorker.cshtml" />
+    <Content Include="Views\Worker\EditWorkerDetails.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -149,6 +149,16 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataAccess\DataAccess.csproj">
+      <Project>{A1B81FF5-3454-4A33-A819-D9976A81BF4F}</Project>
+      <Name>DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataModels\DataModels.csproj">
+      <Project>{FB69FC4D-33E9-4731-9D72-FFA192EAB0A8}</Project>
+      <Name>DataModels</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
