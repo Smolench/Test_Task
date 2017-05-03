@@ -103,5 +103,10 @@ namespace TestTask.Controllers
         {
             return RedirectToAction("GetAllWorkerDetails");
         }
+
+        public ActionResult Home()
+        {
+            return View("~/Views/Main/Index.cshtml");
+        }
     }
 }

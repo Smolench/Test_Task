@@ -6,10 +6,10 @@
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>Company</h4>
+        <h4>Edit company details</h4>
         <hr />
         <div>
-            @Html.ActionLink("Back to Details", "GetAllCompanies")
+            @Html.ActionLink("Back to company list", "GetAllCompanies")
         </div>
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.CompanyId)

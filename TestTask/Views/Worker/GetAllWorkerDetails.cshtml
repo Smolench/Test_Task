@@ -1,7 +1,10 @@
 ﻿@model IEnumerable<TestTask.Models.Worker>
-
 <p>
-    @Html.ActionLink("Add New", "AddWorker")
+    @Html.Action("Index","Main")
+</p>
+<br />
+<p>
+    @Html.ActionLink("Add new worker", "AddWorker")
 </p>
 <table class="table">
     <tr>

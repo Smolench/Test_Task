@@ -1,7 +1,11 @@
 ﻿@model IEnumerable<TestTask.Models.Company>
 
 <p>
-    @Html.ActionLink("Create New", "AddCompany")
+   @Html.Action("Index", "Main")
+</p>
+<br />
+<p>
+    @Html.ActionLink("Create new company", "AddCompany")
 </p>
 
 <table class="table">

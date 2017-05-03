@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using TestTask.Models;
 using TestTask.Repository;
 
@@ -14,9 +10,9 @@ namespace TestTask.Controllers
         public ActionResult GetAllCompanyDetails()
         {
 
-            CompanyRepository CompRepository = new CompanyRepository();
+            CompanyRepository compRepository = new CompanyRepository();
             ModelState.Clear();
-            return View(CompRepository.GetAllCompanies());
+            return View(compRepository.GetAllCompanies());
         }
 
        
@@ -27,15 +23,15 @@ namespace TestTask.Controllers
 
            
         [HttpPost]
-        public ActionResult AddCompany(Company Comp)
+        public ActionResult AddCompany(Company comp)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    CompanyRepository CompRepository = new CompanyRepository();
+                    CompanyRepository compRepository = new CompanyRepository();
 
-                    if (CompRepository.AddCompany(Comp))
+                    if (compRepository.AddCompany(comp))
                     {
                         ViewBag.Message = "Company details added successfully";
                     }
@@ -52,11 +48,11 @@ namespace TestTask.Controllers
        
         public ActionResult EditCompanyDetails(int id)
         {
-            CompanyRepository CompRepository = new CompanyRepository();
+            CompanyRepository compRepository = new CompanyRepository();
 
 
 
-            return View(CompRepository.GetAllCompanies().Find(Comp => Comp.CompanyId == id));
+            return View(compRepository.GetAllCompanies().Find(comp => comp.CompanyId == id));
 
         }
 
@@ -67,9 +63,9 @@ namespace TestTask.Controllers
         {
             try
             {
-                CompanyRepository CompRepository = new CompanyRepository();
+                CompanyRepository compRepository = new CompanyRepository();
 
-                CompRepository.UpdateCompany(obj);
+                compRepository.UpdateCompany(obj);
 
 
 
@@ -87,8 +83,8 @@ namespace TestTask.Controllers
         {
             try
             {
-                CompanyRepository CompRepository = new CompanyRepository();
-                if (CompRepository.DeleteCompany(id))
+                CompanyRepository compRepository = new CompanyRepository();
+                if (compRepository.DeleteCompany(id))
                 {
                     ViewBag.AlertMsg = "company details deleted successfully";
 
@@ -105,6 +101,11 @@ namespace TestTask.Controllers
         public ActionResult GetAllCompanies()
         {
             return RedirectToAction("GetAllCompanyDetails");
+        }
+
+        public ActionResult Home()
+        {
+            return View("~/Views/Main/Index.cshtml");
         }
     }
 }
