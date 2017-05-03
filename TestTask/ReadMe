@@ -1,0 +1,2 @@
+﻿Скрипт базы данных находится в файле TestTaskDB.sql. 
+Для подключения нужно в файле Web.config поменять "connectionString".
